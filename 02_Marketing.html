@@ -1,0 +1,2781 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="aurora">
+  <title>Footage KI-Taktik-Kamera — 5-Jahres-Evaluation &amp; Business Case</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+
+      /* 1. Aurora Style Tokens */
+      --background: #0c1214;
+      --surface-container-low: #111a1e;
+      --surface-container: #152024;
+      --surface-container-high: #1c2a30;
+
+      --on-surface: #edf3f5;
+      --on-surface-variant: #94a8b0;
+
+      --outline: #38515c;
+      --outline-variant: #213138;
+
+      --primary: #63c7d6;
+      --on-primary: #081214;
+      --primary-container: #163840;
+      --on-primary-container: #c7f0f7;
+      --secondary: #5d7882;
+      --tertiary: #87d69b;
+      --error: #f27474;
+      --on-error: #1a0606;
+
+      --data-1: #63c7d6;
+      --data-2: #87d69b;
+      --data-3: #e8b954;
+      --data-4: #f08c70;
+      --data-context: #415861;
+
+      --font-headline: 'Instrument Sans', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-label: 'Geist Mono', monospace;
+
+      --rounded: 0.5rem;
+      --rounded-lg: 0.75rem;
+      --rounded-full: 9999px;
+
+      --hairline: 1px solid var(--outline-variant);
+      --hairline-strong: 1px solid var(--outline);
+      --panel-gradient: linear-gradient(180deg, #162226 0%, #111a1e 100%);
+      --heading-tracking: -0.025em;
+      --label-tracking: 0.06em;
+      --sage-tint: color-mix(in srgb, var(--tertiary) 13%, transparent);
+      --cyan-tint: color-mix(in srgb, var(--primary) 13%, transparent);
+      --amber-tint: color-mix(in srgb, var(--data-3) 14%, transparent);
+      --error-tint: color-mix(in srgb, var(--error) 14%, transparent);
+      --sage-border: 1px solid color-mix(in srgb, var(--tertiary) 35%, transparent);
+      --cyan-border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+      --amber-border: 1px solid color-mix(in srgb, var(--data-3) 40%, transparent);
+      --error-border: 1px solid color-mix(in srgb, var(--error) 40%, transparent);
+      --grid-tick: color-mix(in srgb, var(--on-surface-variant) 75%, transparent);
+      --area-cyan: color-mix(in srgb, var(--data-1) 14%, transparent);
+      --area-sage: color-mix(in srgb, var(--data-2) 14%, transparent);
+
+      /* 3. Shared Foundation Tokens */
+      --positive: var(--tertiary);
+      --warning: var(--data-3);
+      --focus: var(--primary);
+
+      --display-size: clamp(1.625rem, 1.35rem + 1.1vw, 2.125rem);
+      --headline-size: clamp(1.1875rem, 1.05rem + 0.45vw, 1.375rem);
+      --subhead-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.12vw, 0.98rem);
+      --label-size: 0.75rem;
+
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base Reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Page Container */
+    .app-shell {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-lg);
+    }
+    .app-shell * { min-width: 0; }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: var(--hairline);
+    }
+    .header-copy {
+      max-width: 72ch;
+    }
+    .page-title {
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 600;
+      letter-spacing: var(--heading-tracking);
+      line-height: 1.1;
+      margin: 0 0 var(--space-xs) 0;
+      color: var(--on-surface);
+    }
+    .page-subtitle {
+      margin: 0;
+      color: var(--on-surface-variant);
+      font-size: var(--body-size);
+    }
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: var(--hairline-strong);
+      background-color: var(--surface-container);
+      color: var(--on-surface);
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out),
+                  transform var(--dur-micro) var(--ease-out);
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background-color: var(--surface-container-high);
+      border-color: var(--primary);
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover {
+      background-color: var(--on-primary-container);
+      border-color: var(--on-primary-container);
+    }
+    .btn-subtle {
+      background-color: transparent;
+      border: var(--hairline);
+      color: var(--on-surface-variant);
+    }
+    .btn-subtle:hover {
+      color: var(--on-surface);
+      background-color: var(--surface-container);
+      border-color: var(--outline);
+    }
+    .btn-danger-armed {
+      background-color: var(--error-tint);
+      border: var(--error-border);
+      color: var(--error);
+    }
+
+    .btn-sm {
+      min-height: 36px;
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.8125rem;
+    }
+
+    /* Aurora Panel */
+    .panel {
+      background: var(--panel-gradient);
+      border: var(--hairline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+    }
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .panel-title {
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 600;
+      letter-spacing: var(--heading-tracking);
+      line-height: 1.15;
+      margin: 0;
+    }
+    .data-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      letter-spacing: var(--label-tracking);
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+
+    /* Status Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 3px var(--space-sm);
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .chip-sage {
+      background: var(--sage-tint);
+      color: var(--tertiary);
+      border: var(--sage-border);
+    }
+    .chip-cyan {
+      background: var(--cyan-tint);
+      color: var(--primary);
+      border: var(--cyan-border);
+    }
+    .chip-amber {
+      background: var(--amber-tint);
+      color: var(--warning);
+      border: var(--amber-border);
+    }
+    .chip-error {
+      background: var(--error-tint);
+      color: var(--error);
+      border: var(--error-border);
+    }
+
+    /* 5-Year Planner Command Strip */
+    .planner-panel {
+      display: grid;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+    }
+    .planner-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+    .planner-slots {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+    .year-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-xs);
+      padding: var(--space-sm) var(--space-md);
+      min-height: 44px;
+      border-radius: var(--rounded);
+      background-color: var(--background);
+      border: var(--hairline);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color var(--dur-micro) var(--ease-out),
+                  background-color var(--dur-micro) var(--ease-out);
+    }
+    .year-slot:hover {
+      border-color: var(--outline);
+      background-color: var(--surface-container-low);
+    }
+    .year-slot.is-active {
+      border-color: var(--primary);
+      background-color: var(--primary-container);
+    }
+    .year-slot.is-saved {
+      border-color: color-mix(in srgb, var(--tertiary) 45%, var(--outline-variant));
+    }
+    .year-slot.is-active.is-saved {
+      border-color: var(--primary);
+    }
+    .year-slot-head {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .year-slot-name {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--on-surface);
+    }
+    .year-slot-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface-variant);
+    }
+    .year-slot-meta strong {
+      color: var(--on-surface);
+      font-weight: 600;
+    }
+
+    .planner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .planner-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .inline-feedback {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--tertiary);
+      min-height: 1.25em;
+    }
+
+    /* KPI Grids */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .kpi-card {
+      background: var(--panel-gradient);
+      border: var(--hairline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-xs);
+    }
+    .kpi-card.is-highlight {
+      border-color: color-mix(in srgb, var(--primary) 35%, var(--outline-variant));
+    }
+    .kpi-value {
+      font-family: var(--font-headline);
+      font-size: clamp(1.375rem, 1.15rem + 0.75vw, 1.75rem);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: var(--heading-tracking);
+      line-height: 1.15;
+      color: var(--on-surface);
+    }
+    .kpi-sub {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface-variant);
+    }
+    .kpi-sub.is-positive { color: var(--tertiary); }
+    .kpi-sub.is-negative { color: var(--error); }
+    .kpi-sub.is-warning { color: var(--warning); }
+
+    /* Main Asymmetric Two-Column Workspace */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Control Deck (Left Column) */
+    .control-deck {
+      display: grid;
+      gap: var(--space-md);
+    }
+    .control-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xs);
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-xs);
+    }
+    .tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      padding: var(--space-sm) var(--space-sm);
+      min-height: 44px;
+      border-radius: calc(var(--rounded) - 2px);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+    }
+    .tab-btn:hover {
+      background-color: var(--surface-container-low);
+    }
+    .tab-btn.is-active {
+      background-color: var(--surface-container-high);
+      border-color: var(--primary);
+    }
+    .tab-btn-title {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--on-surface);
+    }
+    .tab-btn-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control-section {
+      display: none;
+      gap: var(--space-md);
+    }
+    .control-section.is-active {
+      display: grid;
+    }
+
+    /* Input Wells */
+    .well {
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .field-group {
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+    }
+    .field-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--on-surface);
+    }
+    .field-readout {
+      font-family: var(--font-label);
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--primary);
+    }
+    .field-hint {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      margin: 0;
+    }
+
+    /* Dual slider + number row */
+    .dual-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 112px;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    input[type="number"], select {
+      min-height: 40px;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      border: var(--hairline-strong);
+      background-color: var(--surface-container-low);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: 0.875rem;
+      font-variant-numeric: tabular-nums;
+    }
+    select {
+      padding-right: var(--space-lg);
+      cursor: pointer;
+    }
+    input[type="number"]:focus, select:focus {
+      border-color: var(--primary);
+      outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+      outline-offset: 1px;
+    }
+
+    /* Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: var(--rounded-full);
+      background: var(--surface-container-high);
+      cursor: pointer;
+      margin: var(--space-sm) 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: var(--rounded-full);
+      background: var(--primary);
+      border: 2px solid var(--background);
+      cursor: pointer;
+      transition: transform var(--dur-micro) var(--ease-out);
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: var(--rounded-full);
+      background: var(--primary);
+      border: 2px solid var(--background);
+      cursor: pointer;
+    }
+
+    /* Segmented Option Buttons */
+    .seg-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+    .seg-group.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .seg-btn {
+      min-height: 40px;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      border: var(--hairline);
+      background-color: var(--surface-container-low);
+      color: var(--on-surface-variant);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+    }
+    .seg-btn:hover {
+      color: var(--on-surface);
+      border-color: var(--outline);
+    }
+    .seg-btn.is-active {
+      background-color: var(--primary-container);
+      color: var(--on-primary-container);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Budget Allocation Stacked Bar */
+    .alloc-bar {
+      display: flex;
+      height: 12px;
+      width: 100%;
+      border-radius: var(--rounded-full);
+      overflow: hidden;
+      background-color: var(--surface-container-high);
+      border: var(--hairline);
+    }
+    .alloc-seg-ads { background-color: var(--data-1); }
+    .alloc-seg-spons { background-color: var(--data-3); }
+    .alloc-seg-rnd { background-color: var(--data-2); }
+    .alloc-seg-dev { background-color: var(--data-4); }
+    .alloc-seg-sales { background-color: var(--secondary); }
+
+    .alloc-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: var(--rounded-full);
+      margin-right: 4px;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      min-height: 44px;
+      cursor: pointer;
+    }
+    .toggle-track {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+      border-radius: var(--rounded-full);
+      background-color: var(--surface-container-high);
+      border: var(--hairline-strong);
+      transition: background-color var(--dur-micro) var(--ease-in-out),
+                  border-color var(--dur-micro) var(--ease-in-out);
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: var(--rounded-full);
+      background-color: var(--on-surface-variant);
+      transition: transform var(--dur-micro) var(--ease-in-out),
+                  background-color var(--dur-micro) var(--ease-in-out);
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      cursor: pointer;
+      text-align: left;
+    }
+    .toggle-btn[aria-pressed="true"] .toggle-track {
+      background-color: var(--primary-container);
+      border-color: var(--primary);
+    }
+    .toggle-btn[aria-pressed="true"] .toggle-thumb {
+      transform: translateX(20px);
+      background-color: var(--primary);
+    }
+
+    /* Right Analytics Column */
+    .analytics-stack {
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    /* 5-Year Aggregate Summary Strip */
+    .agg-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .agg-tile {
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    /* Chart Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .chart-box {
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .chart-wrap {
+      position: relative;
+      min-height: 270px;
+      height: 270px;
+      width: 100%;
+    }
+    .empty-chart-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-lg);
+      gap: var(--space-sm);
+      background-color: color-mix(in srgb, var(--background) 86%, transparent);
+      border-radius: var(--rounded);
+      z-index: 2;
+    }
+
+    /* Veo Benchmark Section */
+    .benchmark-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: var(--space-md);
+    }
+    .bar-row {
+      display: grid;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+      font-size: 0.875rem;
+    }
+    .bar-track {
+      height: 10px;
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded-full);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: var(--rounded-full);
+      transition: width var(--dur-short) var(--ease-out);
+    }
+    .bar-fill.is-footage { background-color: var(--data-1); }
+    .bar-fill.is-haas { background-color: var(--data-2); }
+    .bar-fill.is-veo { background-color: var(--data-4); }
+    .bar-fill.is-comp { background-color: var(--data-context); }
+
+    .score-compare-list {
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .score-card {
+      background-color: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .score-card.is-primary {
+      border-color: var(--primary);
+      background-color: color-mix(in srgb, var(--primary) 7%, var(--background));
+    }
+
+    /* GuV Table */
+    .table-scroll {
+      overflow-x: auto;
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      background-color: var(--background);
+    }
+    table.guv-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+    table.guv-table th,
+    table.guv-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--hairline);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 0.875rem;
+    }
+    table.guv-table th {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      letter-spacing: var(--label-tracking);
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+      background-color: var(--surface-container-low);
+      position: sticky;
+      top: 0;
+    }
+    table.guv-table th:first-child,
+    table.guv-table td:first-child {
+      text-align: left;
+      font-family: var(--font-body);
+    }
+    table.guv-table td:not(:first-child) {
+      font-family: var(--font-label);
+    }
+    table.guv-table tr.row-subtotal td {
+      background-color: var(--surface-container-low);
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+    table.guv-table tr.row-ebit td {
+      background-color: var(--surface-container);
+      font-weight: 700;
+      border-top: var(--hairline-strong);
+      border-bottom: none;
+    }
+    table.guv-table td.val-pos { color: var(--tertiary); }
+    table.guv-table td.val-neg { color: var(--error); }
+    table.guv-table th.col-active,
+    table.guv-table td.col-active {
+      background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+
+    /* Footer Sources Note */
+    .sources-footer {
+      border-top: var(--hairline);
+      padding-top: var(--space-md);
+      color: var(--on-surface-variant);
+      font-size: 0.8125rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    /* Container & Responsive Queries */
+    .card-wrapper { container-type: inline-size; }
+    @container (max-width: 720px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .benchmark-grid { grid-template-columns: 1fr; }
+      .agg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 1120px) {
+      .workspace-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .app-shell { padding: var(--space-md); gap: var(--space-md); }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .planner-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .agg-grid { grid-template-columns: 1fr; }
+      .dual-control { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-copy">
+        <h1 class="page-title">Footage KI-Taktik-Kamera — Kaufmännische 5-Jahres-Evaluation</h1>
+        <p class="page-subtitle">
+          Interaktives Sport-Tech-Controlling für das Hardware- und SaaS-Geschäftsmodell im DACH-Fußballmarkt (10.710 Zielteams) im direkten Preis-Leistungs-Vergleich mit Veo.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-sm" onclick="applyPreset('reference')">
+          <i data-lucide="compass" width="16" height="16"></i>
+          Referenz-Case
+        </button>
+        <button type="button" class="btn btn-sm" onclick="applyPreset('veoAttack')">
+          <i data-lucide="zap" width="16" height="16"></i>
+          Veo-Preisangriff
+        </button>
+        <button type="button" class="btn btn-sm" onclick="applyPreset('saasHaas')">
+          <i data-lucide="repeat" width="16" height="16"></i>
+          All-in-One SaaS
+        </button>
+        <button type="button" class="btn btn-sm" onclick="exportCsv()">
+          <i data-lucide="download" width="16" height="16"></i>
+          GuV-CSV
+        </button>
+        <button type="button" id="btn-reset-all" class="btn btn-subtle btn-sm" onclick="handleResetAll(this)">
+          <i data-lucide="rotate-ccw" width="16" height="16"></i>
+          Zurücksetzen
+        </button>
+      </div>
+    </header>
+
+    <!-- Section 1: 5-Year Save Slots & Command Bar -->
+    <section class="panel planner-panel" aria-label="5-Jahres-Speichersteuerung">
+      <div class="planner-top">
+        <div>
+          <span class="data-label">5-Jahres-Planungshorizont (Geschäftsjahre 1 bis 5)</span>
+          <p class="field-hint">
+            Konfiguriere jedes Geschäftsjahr über das linke Cockpit und sichere den Stand. Bestandsabonnenten aus dem Vorjahr werden automatisch mit Churn-Rate fortgeschrieben.
+          </p>
+        </div>
+        <div class="planner-cta-group">
+          <button type="button" class="btn btn-primary" id="btn-save-year" onclick="saveCurrentYear()">
+            <i data-lucide="save" width="16" height="16"></i>
+            <span id="save-btn-label">Jahr 1 speichern</span>
+          </button>
+          <button type="button" class="btn" onclick="autoPopulateFiveYears()">
+            <i data-lucide="layers" width="16" height="16"></i>
+            5-Jahres-Pfad füllen
+          </button>
+        </div>
+      </div>
+
+      <div class="planner-slots" id="year-slots-container">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="planner-actions">
+        <div class="inline-feedback" id="planner-feedback"></div>
+        <div style="display: flex; gap: var(--space-sm); align-items: center;">
+          <button type="button" class="btn btn-subtle btn-sm" id="btn-delete-year" onclick="deleteActiveSavedYear()">
+            Aktives Jahr löschen
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Live KPI Row (Active Year) -->
+    <section aria-label="Live-Kennzahlen für das aktive Geschäftsjahr">
+      <div class="kpi-grid">
+        <article class="kpi-card is-highlight">
+          <span class="data-label" id="kpi-rev-label">Netto-Umsatz (Jahr 1)</span>
+          <div class="kpi-value" id="kpi-rev">—</div>
+          <div class="kpi-sub" id="kpi-rev-sub">HW: — · SaaS: —</div>
+        </article>
+        <article class="kpi-card">
+          <span class="data-label">EBIT (Operatives Ergebnis)</span>
+          <div class="kpi-value" id="kpi-ebit">—</div>
+          <div class="kpi-sub" id="kpi-ebit-sub">EBIT-Marge: —</div>
+        </article>
+        <article class="kpi-card">
+          <span class="data-label">Deckungsbeitrag II</span>
+          <div class="kpi-value" id="kpi-db2">—</div>
+          <div class="kpi-sub" id="kpi-db2-sub">DB-II-Marge: —</div>
+        </article>
+        <article class="kpi-card">
+          <span class="data-label">Break-Even-Schwelle</span>
+          <div class="kpi-value" id="kpi-be">—</div>
+          <div class="kpi-sub" id="kpi-be-sub">Neuabsatz: — Teams</div>
+        </article>
+        <article class="kpi-card">
+          <span class="data-label">SaaS-Churn &amp; CLV / CAC</span>
+          <div class="kpi-value" id="kpi-clvcac">—</div>
+          <div class="kpi-sub" id="kpi-clvcac-sub">Churn: — · CAC: —</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Main Asymmetric Workspace -->
+    <main class="workspace-grid">
+      <!-- Left Control Rail -->
+      <aside class="panel control-deck" aria-label="Steuerungsvariablen">
+        <div class="panel-header" style="margin-bottom: 0;">
+          <div>
+            <span class="data-label" id="control-year-kicker">Konfiguration für Jahr 1</span>
+            <h2 class="panel-title">Steuerungscockpit</h2>
+          </div>
+          <span class="chip chip-cyan" id="active-market-chip">Markt: DE</span>
+        </div>
+
+        <!-- Category Navigation inside Control Deck -->
+        <div class="control-tabs" role="tablist" aria-label="Parameter-Bereiche">
+          <button type="button" class="tab-btn is-active" id="tab-btn-budget" onclick="switchControlTab('budget')">
+            <span class="tab-btn-title">1. Top-Down Budget</span>
+            <span class="tab-btn-meta" id="tab-meta-budget">1,50 Mio. €</span>
+          </button>
+          <button type="button" class="tab-btn" id="tab-btn-prodprice" onclick="switchControlTab('prodprice')">
+            <span class="tab-btn-title">2. Product &amp; Price</span>
+            <span class="tab-btn-meta" id="tab-meta-prodprice">Pro · 999 €</span>
+          </button>
+          <button type="button" class="tab-btn" id="tab-btn-placepromo" onclick="switchControlTab('placepromo')">
+            <span class="tab-btn-title">3. Place &amp; Promotion</span>
+            <span class="tab-btn-meta" id="tab-meta-placepromo">D2C 65%</span>
+          </button>
+          <button type="button" class="tab-btn" id="tab-btn-ops" onclick="switchControlTab('ops')">
+            <span class="tab-btn-title">4. Operations &amp; Churn</span>
+            <span class="tab-btn-meta" id="tab-meta-ops">EU · 15% Churn</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: TOP-DOWN BUDGET -->
+        <div class="control-section is-active" id="ctrl-budget">
+          <div class="well">
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="num-total-budget">Jährliches Gesamtbudget (exkl. COGS &amp; Versand)</label>
+                <span class="field-readout" id="lbl-total-budget">1.500.000 €</span>
+              </div>
+              <div class="dual-control">
+                <input type="range" id="rng-total-budget" min="400000" max="4000000" step="25000" value="1500000" oninput="syncBudgetFromSlider(this.value)">
+                <input type="number" id="num-total-budget" min="400000" max="4000000" step="25000" value="1500000" oninput="syncBudgetFromNumber(this.value)">
+              </div>
+              <p class="field-hint">
+                Primäres Top-Down-Budget für Marketing, Sponsoring, F&amp;E und Personal. Variable Herstell-, Cloud- und Versandkosten werden stückabhängig berechnet.
+              </p>
+            </div>
+
+            <div class="alloc-bar" aria-label="Budgetverteilung">
+              <div class="alloc-seg-ads" id="bar-ads" style="width: 20%;"></div>
+              <div class="alloc-seg-spons" id="bar-spons" style="width: 15%;"></div>
+              <div class="alloc-seg-rnd" id="bar-rnd" style="width: 30%;"></div>
+              <div class="alloc-seg-dev" id="bar-dev" style="width: 20%;"></div>
+              <div class="alloc-seg-sales" id="bar-sales" style="width: 15%;"></div>
+            </div>
+            <div class="alloc-legend">
+              <span><i class="legend-dot" style="background: var(--data-1);"></i>Ads</span>
+              <span><i class="legend-dot" style="background: var(--data-3);"></i>Sponsoring</span>
+              <span><i class="legend-dot" style="background: var(--data-2);"></i>F&amp;E/KI</span>
+              <span><i class="legend-dot" style="background: var(--data-4);"></i>Dev-Team</span>
+              <span><i class="legend-dot" style="background: var(--secondary);"></i>Sales-Team</span>
+            </div>
+          </div>
+
+          <div class="well">
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-alloc-ads">Promotion / Social Media Ads</label>
+                <span class="field-readout" id="lbl-alloc-ads">20 % · 300.000 €</span>
+              </div>
+              <input type="range" id="rng-alloc-ads" min="5" max="60" step="1" value="20" oninput="updateBudgetShare('ads', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-alloc-spons">Sponsoring / Verbände, Botschafter &amp; Messen</label>
+                <span class="field-readout" id="lbl-alloc-spons">15 % · 225.000 €</span>
+              </div>
+              <input type="range" id="rng-alloc-spons" min="5" max="50" step="1" value="15" oninput="updateBudgetShare('spons', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-alloc-rnd">F&amp;E / KI-Modelltraining &amp; Produktentwicklung</label>
+                <span class="field-readout" id="lbl-alloc-rnd">30 % · 450.000 €</span>
+              </div>
+              <input type="range" id="rng-alloc-rnd" min="5" max="60" step="1" value="30" oninput="updateBudgetShare('rnd', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-alloc-dev">Personal F&amp;E (Entwicklerteam)</label>
+                <span class="field-readout" id="lbl-alloc-dev">20 % · 300.000 €</span>
+              </div>
+              <input type="range" id="rng-alloc-dev" min="5" max="50" step="1" value="20" oninput="updateBudgetShare('dev', this.value)">
+              <p class="field-hint" id="hint-dev-fte">Finanziert ca. 3,5 FTE am Standort Europa</p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-alloc-sales">Personal Sales (Außendienst / Inside Sales)</label>
+                <span class="field-readout" id="lbl-alloc-sales">15 % · 225.000 €</span>
+              </div>
+              <input type="range" id="rng-alloc-sales" min="5" max="50" step="1" value="15" oninput="updateBudgetShare('sales', this.value)">
+              <p class="field-hint" id="hint-sales-fte">Finanziert ca. 3,0 Sales-FTE (75.000 €/FTE)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: PRODUCT & PRICE -->
+        <div class="control-section" id="ctrl-prodprice">
+          <div class="well">
+            <span class="data-label">Product — Leistungsprogramm</span>
+            <div class="field-group">
+              <label class="field-label">Hardware-Ausstattungsstufe</label>
+              <div class="seg-group" id="seg-tier">
+                <button type="button" class="seg-btn" data-val="standard" onclick="setTier('standard')">Standard</button>
+                <button type="button" class="seg-btn is-active" data-val="pro" onclick="setTier('pro')">Pro (LTE)</button>
+                <button type="button" class="seg-btn" data-val="ultra" onclick="setTier('ultra')">Ultra 4K</button>
+              </div>
+              <p class="field-hint" id="hint-tier-cogs">Herstellkosten J1: 512,50 € (−8 % Lernkurve p.a.)</p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="sel-ai-depth">KI-Funktionstiefe (SaaS-Analyse)</label>
+                <span class="field-readout" id="lbl-ai-depth">Taktik-KI</span>
+              </div>
+              <select id="sel-ai-depth" onchange="setAiDepth(this.value)">
+                <option value="1">Stufe 1: Auto-Tracking &amp; Highlights (+0 € Cloud)</option>
+                <option value="2" selected>Stufe 2: Taktik-KI, Heatmaps &amp; Szenen (+4 €/M.)</option>
+                <option value="3">Stufe 3: KI-Co-Trainer &amp; Gegner-Scouting (+9 €/M.)</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Herstellergarantie</label>
+              <div class="seg-group" id="seg-warranty">
+                <button type="button" class="seg-btn" data-val="1" onclick="setWarranty(1)">1 Jahr</button>
+                <button type="button" class="seg-btn is-active" data-val="2" onclick="setWarranty(2)">2 Jahre</button>
+                <button type="button" class="seg-btn" data-val="3" onclick="setWarranty(3)">3 Jahre</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="well">
+            <span class="data-label">Price — Preis- &amp; Konditionenpolitik</span>
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-hw-price">Hardware-Verkaufspreis (netto, inkl. Stativ)</label>
+                <span class="field-readout" id="lbl-hw-price">999 €</span>
+              </div>
+              <input type="range" id="rng-hw-price" min="649" max="1599" step="10" value="999" oninput="setPriceParam('hwPrice', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-saas-price">Software-Abopreis (Monat / Team)</label>
+                <span class="field-readout" id="lbl-saas-price">79 € / Mon.</span>
+              </div>
+              <input type="range" id="rng-saas-price" min="29" max="139" step="2" value="79" oninput="setPriceParam('saasPrice', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-haas-price">All-in-One Abopreis (Hardware + SW / Monat)</label>
+                <span class="field-readout" id="lbl-haas-price">119 € / Mon.</span>
+              </div>
+              <input type="range" id="rng-haas-price" min="69" max="189" step="2" value="119" oninput="setPriceParam('haasPrice', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-haas-share">Kundenanteil All-in-One Abo (statt HW-Kauf)</label>
+                <span class="field-readout" id="lbl-haas-share">25 %</span>
+              </div>
+              <input type="range" id="rng-haas-share" min="0" max="80" step="5" value="25" oninput="setPriceParam('haasShare', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-discount">Vereins- &amp; Mengenrabatt (Ø Nachlass)</label>
+                <span class="field-readout" id="lbl-discount">15 %</span>
+              </div>
+              <input type="range" id="rng-discount" min="0" max="35" step="1" value="15" oninput="setPriceParam('discount', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PLACE & PROMOTION -->
+        <div class="control-section" id="ctrl-placepromo">
+          <div class="well">
+            <span class="data-label">Place — Distributionspolitik</span>
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-d2c-share">Kanal-Mix: D2C Online-Shop vs. Teamsport-Fachhandel</label>
+                <span class="field-readout" id="lbl-d2c-share">65 % D2C / 35 % Handel</span>
+              </div>
+              <input type="range" id="rng-d2c-share" min="15" max="95" step="5" value="65" oninput="setPlaceParam('d2cShare', this.value)">
+              <p class="field-hint">
+                Fachhandel verursacht 30 % Hardware-Marge und 10 % Abo-Provision (1. Jahr), erhöht aber die stationäre Reichweite.
+              </p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-sales-fte">Sales-Außendienst-Personal (Ziel-FTE)</label>
+                <span class="field-readout" id="lbl-sales-fte">3,0 FTE</span>
+              </div>
+              <input type="range" id="rng-sales-fte" min="1" max="12" step="0.5" value="3" oninput="syncSalesFte(this.value)">
+              <p class="field-hint">
+                Synchronisiert mit Top-Down Sales-Personalbudget (75.000 €/FTE; ca. 60 neue Vereine/Jahr pro FTE).
+              </p>
+            </div>
+          </div>
+
+          <div class="well">
+            <span class="data-label">Promotion — Allokation &amp; Testmonat</span>
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-promo-ads-mix">Performance-Ads Fokus (Google &amp; Meta)</label>
+                <span class="field-readout" id="lbl-promo-ads-mix">50 %</span>
+              </div>
+              <input type="range" id="rng-promo-ads-mix" min="20" max="80" step="5" value="50" oninput="setPromoParam('adsMix', this.value)">
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-promo-assoc">Verbandskooperationen &amp; Botschafter-Fokus</label>
+                <span class="field-readout" id="lbl-promo-assoc">60 % Sponsoring-Anteil</span>
+              </div>
+              <input type="range" id="rng-promo-assoc" min="20" max="80" step="5" value="60" oninput="setPromoParam('assocShare', this.value)">
+              <p class="field-hint">Restanteil (40 %) fließt in Trainer-Kongresse &amp; Teamsport-Messen.</p>
+            </div>
+
+            <button type="button" class="toggle-btn" id="btn-free-trial" aria-pressed="true" onclick="toggleFreeTrial()">
+              <div>
+                <div class="field-label">30-Tage Gratis-Testmonat anbieten</div>
+                <p class="field-hint">+28 % Conversion Test→Kauf bei 8 % Rücksende-Quote</p>
+              </div>
+              <div class="toggle-track" aria-hidden="true">
+                <div class="toggle-thumb"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 4: OPERATIONS & CHURN -->
+        <div class="control-section" id="ctrl-ops">
+          <div class="well">
+            <span class="data-label">Operations — Entwicklung &amp; Retention</span>
+            <div class="field-group">
+              <label class="field-label">Entwicklerteam-Standort (Vollkosten / FTE)</label>
+              <div class="seg-group" id="seg-dev-loc">
+                <button type="button" class="seg-btn is-active" data-val="europe" onclick="setDevLocation('europe')">Europa (85k €)</button>
+                <button type="button" class="seg-btn" data-val="hybrid" onclick="setDevLocation('hybrid')">Hybrid (62k €)</button>
+                <button type="button" class="seg-btn" data-val="asia" onclick="setDevLocation('asia')">Asien (42k €)</button>
+              </div>
+              <p class="field-hint">
+                Europa (DSGVO-Hosting) liefert höhere KI-Qualität (+0,2 Feature-Score) und Vertrauen bei Jugendvereinen.
+              </p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="rng-churn">SaaS-Churn-Rate (Kündigungsquote % p.a.)</label>
+                <span class="field-readout" id="lbl-churn">15 % p.a.</span>
+              </div>
+              <input type="range" id="rng-churn" min="5" max="35" step="1" value="15" oninput="setOpsParam('churn', this.value)">
+              <p class="field-hint">
+                Bestimmt Retention-Rate (85 %) und den abgezinsten Customer Lifetime Value (CLV).
+              </p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label" for="sel-market-scope">Marktexpansion (DACH-Rollout)</label>
+                <span class="field-readout" id="lbl-tam">9.072 Zielteams</span>
+              </div>
+              <select id="sel-market-scope" onchange="setOpsParam('marketScope', this.value)">
+                <option value="auto">Automatisch nach Jahr (J1 DE → J2 AT → J3 CH)</option>
+                <option value="de">Nur Deutschland (9.072 Teams)</option>
+                <option value="deat">Deutschland + Österreich (9.954 Teams)</option>
+                <option value="dach">Gesamt DACH (10.710 Teams)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Active Summary Strip inside Control Rail -->
+        <div class="well" style="background-color: var(--surface-container-low);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="data-label">Operative Wirkungskette (Jahr <span id="summary-yr">1</span>)</span>
+            <span class="chip chip-sage" id="summary-score-chip">Score: 6,8 / 10</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); margin-top: var(--space-xs);">
+            <div>
+              <div class="data-label">Neukunden</div>
+              <div style="font-family: var(--font-label); font-weight: 600;" id="sum-new-teams">—</div>
+            </div>
+            <div>
+              <div class="data-label">Aktive Teams</div>
+              <div style="font-family: var(--font-label); font-weight: 600;" id="sum-active-teams">—</div>
+            </div>
+            <div>
+              <div class="data-label">Herstellkosten</div>
+              <div style="font-family: var(--font-label); font-weight: 600;" id="sum-cogs-unit">—</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Analytical Canvas -->
+      <div class="analytics-stack card-wrapper">
+        <!-- 5-Year Aggregated Totals Panel -->
+        <section class="panel" aria-label="Aggregiertes 5-Jahres-Gesamtergebnis">
+          <div class="panel-header">
+            <div>
+              <span class="data-label">Multi-Jahr-Konsolidierung</span>
+              <h2 class="panel-title">5-Jahres-Gesamtergebnis (<span id="agg-saved-count">0 von 5 Jahren gespeichert</span>)</h2>
+            </div>
+            <span class="chip chip-cyan" id="agg-status-chip">Bereit zum Speichern</span>
+          </div>
+          <div class="agg-grid">
+            <div class="agg-tile">
+              <span class="data-label">Kumulierter Gesamtumsatz</span>
+              <div class="kpi-value" id="agg-rev">—</div>
+              <div class="kpi-sub" id="agg-rev-sub">Hardware + SaaS über gespeicherte Jahre</div>
+            </div>
+            <div class="agg-tile">
+              <span class="data-label">Kumuliertes Gesamt-EBIT</span>
+              <div class="kpi-value" id="agg-ebit">—</div>
+              <div class="kpi-sub" id="agg-ebit-sub">Vor Initial-Capex (1,66 Mio. €)</div>
+            </div>
+            <div class="agg-tile">
+              <span class="data-label">5-Jahres-ROI (Netto auf Capex)</span>
+              <div class="kpi-value" id="agg-roi">—</div>
+              <div class="kpi-sub" id="agg-roi-sub">Basis: 1,655 Mio. € F&amp;E-Startinvest</div>
+            </div>
+            <div class="agg-tile">
+              <span class="data-label">Break-Even-Jahr</span>
+              <div class="kpi-value" id="agg-be-year">—</div>
+              <div class="kpi-sub" id="agg-be-sub">Operativ &amp; kumuliert</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Multi-Year Charts -->
+        <section class="panel" aria-label="Grafische 5-Jahres-Gegenüberstellung">
+          <div class="panel-header">
+            <div>
+              <span class="data-label">Zeitreihen-Analyse (Jahr 1 – Jahr 5)</span>
+              <h2 class="panel-title">Finanz- &amp; Abonnenten-Entwicklung</h2>
+            </div>
+            <span class="data-label" id="chart-mode-note">Gespeicherte Jahre + aktive Vorschau</span>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="data-label">Umsatz, DB II &amp; EBIT (Tsd. €)</span>
+                <span class="data-label" style="color: var(--tertiary);">EBIT als Linie</span>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-financials"></canvas>
+                <div class="empty-chart-hint" id="empty-hint-fin" style="display: none;">
+                  <span class="data-label" style="color: var(--primary);">Noch keine Jahre gespeichert</span>
+                  <p class="field-hint">Speichere Jahr 1 über „Jahr 1 speichern“ oder fülle den 5-Jahres-Pfad, um den Mehrjahresvergleich darzustellen.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chart-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="data-label">Abonnenten-Wachstum (Aktive Teams)</span>
+                <span class="data-label" style="color: var(--primary);">Bestand vs. Netto-Zuwachs</span>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-subscribers"></canvas>
+                <div class="empty-chart-hint" id="empty-hint-sub" style="display: none;">
+                  <span class="data-label" style="color: var(--primary);">Abonnenten-Kurve wartet auf Daten</span>
+                  <p class="field-hint">Ab dem ersten gespeicherten Jahr zeigt diese Kurve Bestand, Neukunden und Churn-Abgänge.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Benchmark vs. VEO -->
+        <section class="panel" aria-label="Wettbewerbsbenchmark gegen Veo">
+          <div class="panel-header">
+            <div>
+              <span class="data-label">Wettbewerbspositionierung (Jahr-1-Paket)</span>
+              <h2 class="panel-title">Footage vs. Veo Cam 3 &amp; Marktvergleich</h2>
+            </div>
+            <span class="chip chip-sage" id="veo-advantage-chip">Preisvorteil vs. Veo: —</span>
+          </div>
+
+          <div class="benchmark-grid">
+            <div class="well">
+              <span class="data-label">Gesamtkosten für Verein im 1. Jahr (TCO netto)</span>
+              <div class="bar-row">
+                <div class="bar-meta">
+                  <span>Footage Kaufmodell (eff. nach Rabatt)</span>
+                  <strong style="font-family: var(--font-label);" id="tco-footage-buy">—</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill is-footage" id="bar-tco-buy" style="width: 70%;"></div></div>
+              </div>
+
+              <div class="bar-row">
+                <div class="bar-meta">
+                  <span>Footage All-in-One Abo (12 Monate)</span>
+                  <strong style="font-family: var(--font-label);" id="tco-footage-haas">—</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill is-haas" id="bar-tco-haas" style="width: 55%;"></div></div>
+              </div>
+
+              <div class="bar-row">
+                <div class="bar-meta">
+                  <span>Veo-Benchmark (Kamera + Stativ + 12M Team)</span>
+                  <strong style="font-family: var(--font-label);">2.397 €</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill is-veo" style="width: 85%;"></div></div>
+              </div>
+
+              <div class="bar-row">
+                <div class="bar-meta">
+                  <span>Hudl Focus Flex (Silver-Paket, umgerechnet)</span>
+                  <strong style="font-family: var(--font-label);">2.250 €</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill is-comp" style="width: 80%;"></div></div>
+              </div>
+
+              <div class="bar-row">
+                <div class="bar-meta">
+                  <span>Pixellot Air NXT (Kamera + 12M Abo)</span>
+                  <strong style="font-family: var(--font-label);">1.420 €</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill is-comp" style="width: 51%;"></div></div>
+              </div>
+              <p class="field-hint" style="margin-top: var(--space-xs);" id="veo-tco-note">
+                Ø Zahlungsbereitschaft Amateur-/Leistungsverein: 1.500 € / Team / Jahr.
+              </p>
+            </div>
+
+            <div class="score-compare-list">
+              <span class="data-label">KI-Feature-Score (Index 1–10) &amp; Positionierung</span>
+              <div class="score-card is-primary">
+                <div>
+                  <div style="font-weight: 600;">Footage (Aktuelle Konfig.)</div>
+                  <div class="field-hint" id="bench-footage-spec">Pro · Taktik-KI · EU-DSGVO</div>
+                </div>
+                <div style="font-family: var(--font-label); font-size: 1.25rem; font-weight: 600; color: var(--primary);" id="bench-footage-score">6,8</div>
+              </div>
+              <div class="score-card">
+                <div>
+                  <div style="font-weight: 600;">Veo (Marktführer)</div>
+                  <div class="field-hint">5G-Option · Stativ 5,2 m · Starkes Ökosystem</div>
+                </div>
+                <div style="font-family: var(--font-label); font-size: 1.25rem; font-weight: 600; color: var(--data-4);">8,0</div>
+              </div>
+              <div class="score-card">
+                <div>
+                  <div style="font-weight: 600;">Pixellot Air NXT / Hudl</div>
+                  <div class="field-hint">4–6 h Verarbeitung · US-Fokus</div>
+                </div>
+                <div style="font-family: var(--font-label); font-size: 1.25rem; font-weight: 600; color: var(--on-surface-variant);">7,5</div>
+              </div>
+              <div class="score-card">
+                <div>
+                  <div style="font-weight: 600;">XbotGo Chameleon</div>
+                  <div class="field-hint">Smartphone-basiert, ohne Abo (~330 US-$)</div>
+                </div>
+                <div style="font-family: var(--font-label); font-size: 1.25rem; font-weight: 600; color: var(--on-surface-variant);">5,0</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- GuV & Contribution Margin Table -->
+        <section class="panel" aria-label="Differenzierte Deckungsbeitragsrechnung und GuV">
+          <div class="panel-header">
+            <div>
+              <span class="data-label">Operatives Controlling (Bruhn 2019 · Stufenweise DB-Rechnung)</span>
+              <h2 class="panel-title">Gewinn- und Verlustrechnung (Jahr 1 – Jahr 5)</h2>
+            </div>
+            <span class="data-label" id="guv-active-note">Hervorgehobene Spalte = Aktive Live-Simulation</span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="guv-table" id="guv-table">
+              <!-- Populated by JS -->
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Sources Note -->
+    <footer class="sources-footer">
+      <span>
+        Quellenbasis: Projekt-Kennzahlen KI-Fußballkamera (DACH-Vereinsstatistik, Herstellkosten-Lernkurve, Veo/Pixellot/Hudl-Benchmarks), Bruhn (2019) Differenzierte Deckungsbeitragsrechnung &amp; CLV-Methodik, Meffert et al. (2019) Preis- &amp; Innovationscontrolling.
+      </span>
+      <span style="font-family: var(--font-label);">Alle Beträge in EUR netto · Planungsstand 2026</span>
+    </footer>
+  </div>
+
+  <api-shim></api-shim>
+
+  <script>
+    /* =====================================================================
+       1. CONSTANTS & REFERENCE DATA (Grounded in Kennzahlen_KI.pdf & Bruhn)
+       ===================================================================== */
+    var INITIAL_CAPEX = 1655000; // 450k HW + 90k Tooling + 70k Cert + 900k SW/AI + 120k Data + 25k Brand
+    var VEO_BENCHMARK_TCO = 2397;
+    var VEO_FEATURE_SCORE = 8.0;
+
+    var DEFAULT_CONFIG = {
+      activeYear: 1,
+      totalBudget: 1500000,
+      alloc: {
+        ads: 20,
+        spons: 15,
+        rnd: 30,
+        dev: 20,
+        sales: 15
+      },
+      tier: 'pro',          // 'standard' | 'pro' | 'ultra'
+      aiDepth: 2,           // 1 | 2 | 3
+      warranty: 2,          // 1 | 2 | 3
+      hwPrice: 999,
+      saasPrice: 79,
+      haasPrice: 119,
+      haasShare: 25,
+      discount: 15,
+      d2cShare: 65,
+      adsMix: 50,
+      assocShare: 60,
+      freeTrial: true,
+      devLocation: 'europe', // 'europe' | 'hybrid' | 'asia'
+      churn: 15,
+      marketScope: 'auto'    // 'auto' | 'de' | 'deat' | 'dach'
+    };
+
+    var appState = {
+      config: cloneObj(DEFAULT_CONFIG),
+      savedYears: {} // keys "1".."5" -> { config, metrics }
+    };
+
+    var chartFin = null;
+    var chartSub = null;
+    var currentCtrlTab = 'budget';
+    var saveDebounceTimer = null;
+
+    function cloneObj(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function getCssToken(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    /* =====================================================================
+       2. FINANCIAL & MARKET SIMULATION ENGINE
+       ===================================================================== */
+    function getTamForYear(year, scope) {
+      var effective = scope;
+      if (effective === 'auto') {
+        if (year === 1) effective = 'de';
+        else if (year === 2) effective = 'deat';
+        else effective = 'dach';
+      }
+      if (effective === 'de') return { teams: 9072, label: 'DE' };
+      if (effective === 'deat') return { teams: 9954, label: 'DE + AT' };
+      return { teams: 10710, label: 'DACH' };
+    }
+
+    function getDevCostPerFte(loc, year) {
+      var base = 85000;
+      if (loc === 'hybrid') base = 62000;
+      else if (loc === 'asia') base = 42000;
+      return base * Math.pow(1.03, year - 1);
+    }
+
+    function getBaseCogsY1(tier) {
+      if (tier === 'standard') return 435.0;
+      if (tier === 'ultra') return 645.0;
+      return 512.5; // Reference Pro/LTE set from Kennzahlen_KI.pdf P19
+    }
+
+    function getPreviousActiveSubs(year, savedMap) {
+      if (year <= 1) return 0;
+      var prevKey = String(year - 1);
+      if (savedMap && savedMap[prevKey] && savedMap[prevKey].metrics) {
+        return savedMap[prevKey].metrics.activeSubsEnd;
+      }
+      // Fallback estimate if earlier year not yet saved
+      return Math.round((year - 1) * 340);
+    }
+
+    function computeYearMetrics(cfg, savedMap) {
+      var yr = cfg.activeYear;
+      var tamInfo = getTamForYear(yr, cfg.marketScope);
+
+      // 1. Top-Down Budget Breakdown (100% allocated)
+      var budgetAds = cfg.totalBudget * (cfg.alloc.ads / 100);
+      var budgetSpons = cfg.totalBudget * (cfg.alloc.spons / 100);
+      var budgetRnd = cfg.totalBudget * (cfg.alloc.rnd / 100);
+      var budgetDevStaff = cfg.totalBudget * (cfg.alloc.dev / 100);
+      var budgetSalesStaff = cfg.totalBudget * (cfg.alloc.sales / 100);
+
+      var devFteCost = getDevCostPerFte(cfg.devLocation, yr);
+      var devFte = budgetDevStaff / devFteCost;
+      var salesFteCost = 75000 * Math.pow(1.03, yr - 1);
+      var salesFte = budgetSalesStaff / salesFteCost;
+
+      // 2. Product Feature Score & COGS Learning Curve (-8% p.a.)
+      var tierBaseScore = cfg.tier === 'standard' ? 5.8 : (cfg.tier === 'ultra' ? 7.4 : 6.5);
+      var aiScoreBonus = cfg.aiDepth === 1 ? 0.0 : (cfg.aiDepth === 2 ? 0.65 : 1.25);
+      var locScoreBonus = cfg.devLocation === 'europe' ? 0.2 : (cfg.devLocation === 'hybrid' ? 0.1 : 0.0);
+      var rndScoreBoost = Math.min(1.1, ((budgetRnd + budgetDevStaff * 0.4) / 100000) * 0.06);
+      var featureScore = Math.min(9.6, Number((tierBaseScore + aiScoreBonus + locScoreBonus + rndScoreBoost).toFixed(1)));
+
+      var cogsUnit = getBaseCogsY1(cfg.tier) * Math.pow(0.92, yr - 1);
+
+      // 3. Pricing & Veo Comparison
+      var discFactor = 1 - (cfg.discount / 100);
+      var effHwPrice = cfg.hwPrice * discFactor;
+      var effSaasMonth = cfg.saasPrice * (1 - (cfg.discount * 0.35) / 100);
+      var effHaasMonth = cfg.haasPrice * (1 - (cfg.discount * 0.35) / 100);
+
+      var tcoBuyY1 = effHwPrice + effSaasMonth * 12;
+      var tcoHaasY1 = effHaasMonth * 12;
+      var haasFrac = cfg.haasShare / 100;
+      var blendedTcoY1 = tcoBuyY1 * (1 - haasFrac) + tcoHaasY1 * haasFrac;
+
+      // 4. Demand Modeling (Inbound Funnel + Outbound Sales + Price/Value Elasticity + Saturation)
+      var prevSubs = getPreviousActiveSubs(yr, savedMap);
+      var remainingTam = Math.max(400, tamInfo.teams - prevSubs);
+      var saturationFactor = Math.min(1.0, remainingTam / tamInfo.teams);
+
+      // Price elasticity relative to 1,969 € reference Y1 TCO
+      var refTco = 1800;
+      var priceRatio = Math.max(0.55, blendedTcoY1 / refTco);
+      var priceMult = Math.pow(priceRatio, -1.15);
+
+      // Value & trust multipliers
+      var valueMult = Math.pow(featureScore / 6.5, 0.95);
+      var warrantyMult = cfg.warranty === 1 ? 0.96 : (cfg.warranty === 3 ? 1.06 : 1.0);
+      var trialMult = cfg.freeTrial ? 1.26 : 1.0;
+      var dealerShare = (100 - cfg.d2cShare) / 100;
+      var channelReachMult = 1 + dealerShare * 0.14;
+      var haasConversionMult = 1 + haasFrac * 0.22;
+
+      // Marketing Funnel (Ads + Sponsoring/Associations)
+      var effectiveAdsBudget = budgetAds * (0.75 + 0.5 * (cfg.adsMix / 100));
+      var effectiveSponsBudget = budgetSpons * (0.85 + 0.3 * (cfg.assocShare / 100));
+      var inboundLeads = (effectiveAdsBudget / 58) + (effectiveSponsBudget / 72);
+      var baseConv = 0.125 * trialMult * valueMult * priceMult * haasConversionMult * channelReachMult;
+      var inboundTeams = inboundLeads * Math.min(0.32, baseConv);
+
+      // Outbound Sales (ca. 60 clubs/year per FTE, modified by product value & price)
+      var outboundTeams = salesFte * 58 * Math.min(1.4, valueMult * priceMult * warrantyMult);
+
+      // Word-of-mouth / Bass imitation from installed base
+      var womTeams = prevSubs * 0.22 * (featureScore / 6.8);
+
+      var rawNewTeams = (inboundTeams + outboundTeams + womTeams) * (0.45 + 0.55 * saturationFactor);
+      var newTeams = Math.max(25, Math.min(remainingTam, Math.round(rawNewTeams)));
+
+      // Subscriber Dynamics
+      var churnedTeams = Math.round(prevSubs * (cfg.churn / 100));
+      var activeSubsEnd = Math.max(0, prevSubs - churnedTeams + newTeams);
+      var avgActiveTeams = Math.max(newTeams * 0.55, prevSubs - 0.5 * churnedTeams + 0.55 * newTeams);
+
+      // 5. Differenzierte Deckungsbeitragsrechnung (Bruhn 2019)
+      var buyTeamsNew = newTeams * (1 - haasFrac);
+      var grossHwRev = buyTeamsNew * cfg.hwPrice;
+      var hwDiscountAmt = buyTeamsNew * cfg.hwPrice * (cfg.discount / 100);
+
+      var avgBuySubs = avgActiveTeams * (1 - haasFrac);
+      var avgHaasSubs = avgActiveTeams * haasFrac;
+      var grossSaasRev = (avgBuySubs * cfg.saasPrice * 12) + (avgHaasSubs * cfg.haasPrice * 12);
+      var saasDiscountAmt = grossSaasRev * ((cfg.discount * 0.35) / 100);
+
+      var netHwRev = grossHwRev - hwDiscountAmt;
+      var netSaasRev = grossSaasRev - saasDiscountAmt;
+      var netRevenue = netHwRev + netSaasRev;
+
+      // Variable Manufacturing & Logistics Costs (all shipped sets incl. HaaS)
+      var hwCogsTotal = newTeams * cogsUnit;
+      var shippingFulfill = newTeams * 22; // ~16€ weighted DACH shipping + 6€ fulfillment
+      var trialReturnCost = cfg.freeTrial ? (newTeams * 0.08 * 48) : 0;
+      var varCogsLogistics = hwCogsTotal + shippingFulfill + trialReturnCost;
+
+      var db1 = netRevenue - varCogsLogistics;
+
+      // Sales- & Customer-Variable Costs (Cloud, AI, Dealer Margin, Payment, LTE SIM)
+      var aiCloudMonth = cfg.aiDepth === 1 ? 0 : (cfg.aiDepth === 2 ? 4 : 9);
+      var cloudSupportPerTeamYear = (19 + aiCloudMonth) * 12; // 15€ Cloud + 4€ Support + AI
+      var cloudSupportTotal = avgActiveTeams * cloudSupportPerTeamYear;
+      var dealerMarginHw = netHwRev * dealerShare * 0.30; // 30% Fachhandel HW-Marge
+      var dealerCommSaas = (newTeams * ((1 - haasFrac) * effSaasMonth + haasFrac * effHaasMonth) * 6) * dealerShare * 0.10;
+      var paymentFees = netRevenue * 0.018;
+      var lteShare = cfg.tier === 'standard' ? 0.15 : (cfg.tier === 'ultra' ? 0.70 : 0.45);
+      var lteCosts = avgActiveTeams * lteShare * 6 * 12;
+
+      var varChannelCloudCosts = cloudSupportTotal + dealerMarginHw + dealerCommSaas + paymentFees + lteCosts;
+
+      var db2 = db1 - varChannelCloudCosts;
+
+      // Allocated Top-Down Budget (Opex)
+      var db3 = db2 - cfg.totalBudget;
+
+      // Fixed Base Overhead & Warranty Provision
+      var baseOverhead = 180000 + (yr - 1) * 40000; // Governance, Legal, Office, Admin
+      var warrantyCost = newTeams * 0.04 * 180 * (cfg.warranty / 2);
+      var fixedOverheadTotal = baseOverhead + warrantyCost;
+
+      var ebit = db3 - fixedOverheadTotal;
+
+      // 6. Unit Economics & Break-Even
+      var acqSpend = budgetAds + budgetSpons + budgetSalesStaff + dealerCommSaas;
+      var cac = acqSpend / Math.max(1, newTeams);
+
+      var annualArpu = (1 - haasFrac) * effSaasMonth * 12 + haasFrac * effHaasMonth * 12;
+      var annualVarPerTeam = cloudSupportPerTeamYear + (lteShare * 72) + (annualArpu * 0.018);
+      var annualSaasMargin = Math.max(1, annualArpu - annualVarPerTeam);
+      var discountRate = 0.10;
+      var churnFrac = cfg.churn / 100;
+      var clvSaas = annualSaasMargin * (1 / (churnFrac + discountRate));
+      var hwMarginPerCustomer = (1 - haasFrac) * (effHwPrice * (1 - dealerShare * 0.30) - cogsUnit - 22) - (haasFrac * (cogsUnit + 22));
+      var clv = Math.max(0, clvSaas + hwMarginPerCustomer);
+      var clvCacRatio = clv / Math.max(1, cac);
+
+      // Break-Even Teams (current year Opex + Overhead divided by Year-1 Customer DB II contribution)
+      var y1ContribPerNewTeam = ((1 - haasFrac) * (effHwPrice * (1 - dealerShare * 0.30) - cogsUnit - 22))
+        + (annualSaasMargin * 0.65)
+        - (haasFrac * (cogsUnit + 22));
+      var totalFixedToCover = cfg.totalBudget + fixedOverheadTotal - (prevSubs * (1 - churnFrac * 0.5) * annualSaasMargin);
+      var breakEvenNewTeams = y1ContribPerNewTeam > 20
+        ? Math.max(0, Math.ceil(totalFixedToCover / y1ContribPerNewTeam))
+        : 9999;
+
+      return {
+        year: yr,
+        tamTeams: tamInfo.teams,
+        marketLabel: tamInfo.label,
+        featureScore: featureScore,
+        cogsUnit: cogsUnit,
+        devFte: devFte,
+        salesFte: salesFte,
+        tcoBuyY1: tcoBuyY1,
+        tcoHaasY1: tcoHaasY1,
+        blendedTcoY1: blendedTcoY1,
+        prevSubs: prevSubs,
+        newTeams: newTeams,
+        churnedTeams: churnedTeams,
+        activeSubsEnd: activeSubsEnd,
+        avgActiveTeams: Math.round(avgActiveTeams),
+        grossHwRev: grossHwRev,
+        grossSaasRev: grossSaasRev,
+        discountsTotal: hwDiscountAmt + saasDiscountAmt,
+        netHwRev: netHwRev,
+        netSaasRev: netSaasRev,
+        netRevenue: netRevenue,
+        varCogsLogistics: varCogsLogistics,
+        db1: db1,
+        varChannelCloudCosts: varChannelCloudCosts,
+        db2: db2,
+        budgetAds: budgetAds,
+        budgetSpons: budgetSpons,
+        budgetRnd: budgetRnd,
+        budgetDevStaff: budgetDevStaff,
+        budgetSalesStaff: budgetSalesStaff,
+        totalBudget: cfg.totalBudget,
+        db3: db3,
+        fixedOverheadTotal: fixedOverheadTotal,
+        ebit: ebit,
+        ebitMargin: netRevenue > 0 ? (ebit / netRevenue) * 100 : 0,
+        db2Margin: netRevenue > 0 ? (db2 / netRevenue) * 100 : 0,
+        cac: cac,
+        clv: clv,
+        clvCacRatio: clvCacRatio,
+        breakEvenNewTeams: breakEvenNewTeams
+      };
+    }
+
+    /* =====================================================================
+       3. FORMATTERS
+       ===================================================================== */
+    function fmtEur(val, compact) {
+      var n = Math.round(val);
+      if (compact && Math.abs(n) >= 1000000) {
+        return (n / 1000000).toFixed(2).replace('.', ',') + ' Mio. €';
+      }
+      return n.toLocaleString('de-DE') + ' €';
+    }
+
+    function fmtPct(val, decimals) {
+      var d = typeof decimals === 'number' ? decimals : 1;
+      return val.toFixed(d).replace('.', ',') + ' %';
+    }
+
+    function fmtNum(val) {
+      return Math.round(val).toLocaleString('de-DE');
+    }
+
+    /* =====================================================================
+       4. UI INTERACTION HANDLERS (All hoisted function declarations)
+       ===================================================================== */
+    function switchControlTab(tabId) {
+      currentCtrlTab = tabId;
+      var tabs = ['budget', 'prodprice', 'placepromo', 'ops'];
+      for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        var btn = document.getElementById('tab-btn-' + t);
+        var sec = document.getElementById('ctrl-' + t);
+        if (btn) btn.classList.toggle('is-active', t === tabId);
+        if (sec) sec.classList.toggle('is-active', t === tabId);
+      }
+    }
+
+    function syncBudgetFromSlider(val) {
+      var num = Math.max(400000, Math.min(4000000, Number(val) || 1500000));
+      appState.config.totalBudget = num;
+      var numInput = document.getElementById('num-total-budget');
+      if (numInput) numInput.value = num;
+      recalcAndRender(true);
+    }
+
+    function syncBudgetFromNumber(val) {
+      var num = Math.max(400000, Math.min(4000000, Number(val) || 400000));
+      appState.config.totalBudget = num;
+      var rng = document.getElementById('rng-total-budget');
+      if (rng) rng.value = num;
+      recalcAndRender(true);
+    }
+
+    function updateBudgetShare(key, rawVal) {
+      var targetVal = Math.max(5, Math.min(70, Math.round(Number(rawVal))));
+      var keys = ['ads', 'spons', 'rnd', 'dev', 'sales'];
+      var others = [];
+      var otherSum = 0;
+      for (var i = 0; i < keys.length; i++) {
+        if (keys[i] !== key) {
+          others.push(keys[i]);
+          otherSum += appState.config.alloc[keys[i]];
+        }
+      }
+      var remaining = 100 - targetVal;
+      appState.config.alloc[key] = targetVal;
+
+      var runningSum = targetVal;
+      for (var j = 0; j < others.length; j++) {
+        var k = others[j];
+        if (j === others.length - 1) {
+          appState.config.alloc[k] = Math.max(5, 100 - runningSum);
+        } else {
+          var prop = otherSum > 0 ? (appState.config.alloc[k] / otherSum) * remaining : (remaining / others.length);
+          var rounded = Math.max(5, Math.round(prop));
+          appState.config.alloc[k] = rounded;
+          runningSum += rounded;
+        }
+      }
+      // Guarantee exact sum = 100
+      var total = 0;
+      for (var m = 0; m < keys.length; m++) total += appState.config.alloc[keys[m]];
+      if (total !== 100) {
+        var diff = 100 - total;
+        for (var n = 0; n < others.length; n++) {
+          var cand = appState.config.alloc[others[n]] + diff;
+          if (cand >= 5 && cand <= 70) {
+            appState.config.alloc[others[n]] = cand;
+            break;
+          }
+        }
+      }
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function syncSalesFte(fteVal) {
+      var fte = Math.max(1, Math.min(12, Number(fteVal) || 3));
+      var yr = appState.config.activeYear;
+      var neededCost = fte * 75000 * Math.pow(1.03, yr - 1);
+      var newShare = Math.max(5, Math.min(50, Math.round((neededCost / appState.config.totalBudget) * 100)));
+      updateBudgetShare('sales', newShare);
+    }
+
+    function setTier(tier) {
+      appState.config.tier = tier;
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function setAiDepth(val) {
+      appState.config.aiDepth = Number(val) || 2;
+      recalcAndRender(true);
+    }
+
+    function setWarranty(yrs) {
+      appState.config.warranty = Number(yrs) || 2;
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function setPriceParam(key, val) {
+      appState.config[key] = Number(val);
+      recalcAndRender(true);
+    }
+
+    function setPlaceParam(key, val) {
+      appState.config[key] = Number(val);
+      recalcAndRender(true);
+    }
+
+    function setPromoParam(key, val) {
+      appState.config[key] = Number(val);
+      recalcAndRender(true);
+    }
+
+    function toggleFreeTrial() {
+      appState.config.freeTrial = !appState.config.freeTrial;
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function setDevLocation(loc) {
+      appState.config.devLocation = loc;
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function setOpsParam(key, val) {
+      appState.config[key] = key === 'churn' ? Number(val) : val;
+      recalcAndRender(true);
+    }
+
+    function selectYear(year) {
+      appState.config.activeYear = year;
+      var key = String(year);
+      if (appState.savedYears[key] && appState.savedYears[key].config) {
+        appState.config = cloneObj(appState.savedYears[key].config);
+        appState.config.activeYear = year;
+      }
+      syncControlsFromConfig();
+      recalcAndRender(true);
+      setFeedback(`Jahr ${year} zur Bearbeitung geladen.`);
+    }
+
+    function saveCurrentYear() {
+      var yr = appState.config.activeYear;
+      var key = String(yr);
+      var metrics = computeYearMetrics(appState.config, appState.savedYears);
+      appState.savedYears[key] = {
+        config: cloneObj(appState.config),
+        metrics: metrics
+      };
+      // Cascade recalculate subsequent saved years so installed subscriber base stays consistent
+      for (var nextYr = yr + 1; nextYr <= 5; nextYr++) {
+        var nk = String(nextYr);
+        if (appState.savedYears[nk]) {
+          appState.savedYears[nk].metrics = computeYearMetrics(appState.savedYears[nk].config, appState.savedYears);
+        }
+      }
+      setFeedback(`Jahr ${yr} erfolgreich gespeichert (Umsatz: ${fmtEur(metrics.netRevenue)}, EBIT: ${fmtEur(metrics.ebit)}).`);
+      // Auto-advance to next unsaved year if < 5
+      if (yr < 5 && !appState.savedYears[String(yr + 1)]) {
+        appState.config.activeYear = yr + 1;
+        // Apply sensible year-over-year scaling suggestion from Kennzahlen_KI.pdf when stepping forward
+        if (yr === 1) {
+          appState.config.totalBudget = Math.min(4000000, Math.round(appState.config.totalBudget * 1.25 / 25000) * 25000);
+          appState.config.discount = Math.max(5, appState.config.discount - 5);
+        } else if (yr >= 2) {
+          appState.config.totalBudget = Math.min(4000000, Math.round(appState.config.totalBudget * 1.15 / 25000) * 25000);
+        }
+      }
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function deleteActiveSavedYear() {
+      var yr = appState.config.activeYear;
+      var key = String(yr);
+      if (!appState.savedYears[key]) {
+        setFeedback(`Jahr ${yr} war noch nicht gespeichert.`);
+        return;
+      }
+      delete appState.savedYears[key];
+      for (var nextYr = yr + 1; nextYr <= 5; nextYr++) {
+        var nk = String(nextYr);
+        if (appState.savedYears[nk]) {
+          appState.savedYears[nk].metrics = computeYearMetrics(appState.savedYears[nk].config, appState.savedYears);
+        }
+      }
+      setFeedback(`Gespeicherter Stand für Jahr ${yr} entfernt.`);
+      recalcAndRender(true);
+    }
+
+    function autoPopulateFiveYears() {
+      var base = cloneObj(appState.config);
+      var budgetPath = [1500000, 1950000, 2350000, 2750000, 2900000];
+      var discountPath = [base.discount, Math.max(5, base.discount - 5), 10, 10, 10];
+      var d2cPath = [base.d2cShare, Math.max(30, base.d2cShare - 5), Math.max(30, base.d2cShare - 10), Math.max(30, base.d2cShare - 12), Math.max(30, base.d2cShare - 15)];
+
+      appState.savedYears = {};
+      for (var y = 1; y <= 5; y++) {
+        var c = cloneObj(base);
+        c.activeYear = y;
+        c.totalBudget = budgetPath[y - 1];
+        c.discount = discountPath[y - 1];
+        c.d2cShare = d2cPath[y - 1];
+        c.saasPrice = Math.round(base.saasPrice * Math.pow(1.03, y - 1));
+        c.haasPrice = Math.round(base.haasPrice * Math.pow(1.03, y - 1));
+        var m = computeYearMetrics(c, appState.savedYears);
+        appState.savedYears[String(y)] = { config: c, metrics: m };
+      }
+      appState.config = cloneObj(appState.savedYears['1'].config);
+      syncControlsFromConfig();
+      recalcAndRender(true);
+      setFeedback(`5-Jahres-Referenzpfad (Jahr 1–5) vollständig berechnet und gespeichert.`);
+    }
+
+    function applyPreset(name) {
+      var c = cloneObj(DEFAULT_CONFIG);
+      c.activeYear = appState.config.activeYear;
+      if (name === 'veoAttack') {
+        c.tier = 'pro';
+        c.aiDepth = 2;
+        c.hwPrice = 799;
+        c.saasPrice = 59;
+        c.haasPrice = 99;
+        c.haasShare = 30;
+        c.discount = 20;
+        c.totalBudget = 1850000;
+        c.alloc = { ads: 26, spons: 16, rnd: 24, dev: 16, sales: 18 };
+        c.freeTrial = true;
+        setFeedback(`Preset „Veo-Preisangriff“ geladen: Aggressiver Einstieg mit hohem Ads- & Sales-Hebel.`);
+      } else if (name === 'saasHaas') {
+        c.tier = 'ultra';
+        c.aiDepth = 3;
+        c.warranty = 3;
+        c.hwPrice = 1199;
+        c.saasPrice = 89;
+        c.haasPrice = 115;
+        c.haasShare = 65;
+        c.discount = 10;
+        c.churn = 10;
+        c.totalBudget = 1700000;
+        c.alloc = { ads: 18, spons: 14, rnd: 34, dev: 20, sales: 14 };
+        setFeedback(`Preset „All-in-One SaaS“ geladen: Fokus auf wiederkehrende HaaS-Erlöse & niedrigen Churn.`);
+      } else {
+        setFeedback(`Referenz-Case (Basiswerte aus Projekt-Kennzahlen) geladen.`);
+      }
+      appState.config = c;
+      syncControlsFromConfig();
+      recalcAndRender(true);
+    }
+
+    function handleResetAll(btn) {
+      if (btn.dataset.armed !== 'true') {
+        btn.dataset.armed = 'true';
+        btn.classList.add('btn-danger-armed');
+        btn.innerHTML = `<i data-lucide="alert-triangle" width="16" height="16"></i> Erneut klicken zum Löschen`;
+        if (window.lucide) lucide.createIcons();
+        setTimeout(function() {
+          if (btn.dataset.armed === 'true') {
+            btn.dataset.armed = 'false';
+            btn.classList.remove('btn-danger-armed');
+            btn.innerHTML = `<i data-lucide="rotate-ccw" width="16" height="16"></i> Zurücksetzen`;
+            if (window.lucide) lucide.createIcons();
+          }
+        }, 4000);
+        return;
+      }
+      btn.dataset.armed = 'false';
+      btn.classList.remove('btn-danger-armed');
+      btn.innerHTML = `<i data-lucide="rotate-ccw" width="16" height="16"></i> Zurücksetzen`;
+      if (window.lucide) lucide.createIcons();
+
+      appState.config = cloneObj(DEFAULT_CONFIG);
+      appState.savedYears = {};
+      syncControlsFromConfig();
+      recalcAndRender(true);
+      setFeedback(`Alle Parameter und gespeicherten Jahre wurden zurückgesetzt.`);
+    }
+
+    function setFeedback(msg) {
+      var el = document.getElementById('planner-feedback');
+      if (el) el.textContent = msg;
+    }
+
+    function exportCsv() {
+      var rows = [
+        ['Kennzahl', 'Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4', 'Jahr 5', '5J-Summe']
+      ];
+      var cols = [];
+      for (var y = 1; y <= 5; y++) {
+        var k = String(y);
+        if (appState.savedYears[k]) cols.push(appState.savedYears[k].metrics);
+        else if (appState.config.activeYear === y) cols.push(computeYearMetrics(appState.config, appState.savedYears));
+        else cols.push(null);
+      }
+      var fields = [
+        ['Aktive Teams (Jahresende)', 'activeSubsEnd'],
+        ['Neukunden (Teams)', 'newTeams'],
+        ['Netto-Hardware-Umsatz (EUR)', 'netHwRev'],
+        ['Netto-SaaS/HaaS-Umsatz (EUR)', 'netSaasRev'],
+        ['Netto-Umsatz Gesamt (EUR)', 'netRevenue'],
+        ['Variable Herstell-/Versandkosten (EUR)', 'varCogsLogistics'],
+        ['Deckungsbeitrag I (EUR)', 'db1'],
+        ['Cloud-, Kanal- & Zahlungskosten (EUR)', 'varChannelCloudCosts'],
+        ['Deckungsbeitrag II (EUR)', 'db2'],
+        ['Allokiertes Top-Down Budget (EUR)', 'totalBudget'],
+        ['Deckungsbeitrag III (EUR)', 'db3'],
+        ['Fixer Overhead & Garantie (EUR)', 'fixedOverheadTotal'],
+        ['EBIT (EUR)', 'ebit']
+      ];
+      for (var f = 0; f < fields.length; f++) {
+        var label = fields[f][0];
+        var prop = fields[f][1];
+        var row = [label];
+        var sum = 0;
+        for (var c = 0; c < 5; c++) {
+          if (cols[c]) {
+            var v = Math.round(cols[c][prop]);
+            row.push(String(v));
+            if (prop !== 'activeSubsEnd') sum += v;
+          } else {
+            row.push('');
+          }
+        }
+        row.push(prop === 'activeSubsEnd' ? '' : String(sum));
+        rows.push(row);
+      }
+      var csvContent = rows.map(function(r) { return r.join(';'); }).join('\n');
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === 'function') {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: 'text/csv',
+          encoding: 'UTF-8',
+          filename: 'footage_5jahres_guv.csv'
+        });
+        setFeedback(`CSV-Export (footage_5jahres_guv.csv) gestartet.`);
+      }
+    }
+
+    /* =====================================================================
+       5. DOM SYNCHRONIZATION & RENDERING
+       ===================================================================== */
+    function syncControlsFromConfig() {
+      var c = appState.config;
+      var el;
+      el = document.getElementById('rng-total-budget'); if (el) el.value = c.totalBudget;
+      el = document.getElementById('num-total-budget'); if (el) el.value = c.totalBudget;
+
+      el = document.getElementById('rng-alloc-ads'); if (el) el.value = c.alloc.ads;
+      el = document.getElementById('rng-alloc-spons'); if (el) el.value = c.alloc.spons;
+      el = document.getElementById('rng-alloc-rnd'); if (el) el.value = c.alloc.rnd;
+      el = document.getElementById('rng-alloc-dev'); if (el) el.value = c.alloc.dev;
+      el = document.getElementById('rng-alloc-sales'); if (el) el.value = c.alloc.sales;
+
+      var tierBtns = document.querySelectorAll('#seg-tier .seg-btn');
+      tierBtns.forEach(function(b) { b.classList.toggle('is-active', b.dataset.val === c.tier); });
+
+      el = document.getElementById('sel-ai-depth'); if (el) el.value = String(c.aiDepth);
+
+      var warBtns = document.querySelectorAll('#seg-warranty .seg-btn');
+      warBtns.forEach(function(b) { b.classList.toggle('is-active', Number(b.dataset.val) === c.warranty); });
+
+      el = document.getElementById('rng-hw-price'); if (el) el.value = c.hwPrice;
+      el = document.getElementById('rng-saas-price'); if (el) el.value = c.saasPrice;
+      el = document.getElementById('rng-haas-price'); if (el) el.value = c.haasPrice;
+      el = document.getElementById('rng-haas-share'); if (el) el.value = c.haasShare;
+      el = document.getElementById('rng-discount'); if (el) el.value = c.discount;
+
+      el = document.getElementById('rng-d2c-share'); if (el) el.value = c.d2cShare;
+      el = document.getElementById('rng-promo-ads-mix'); if (el) el.value = c.adsMix;
+      el = document.getElementById('rng-promo-assoc'); if (el) el.value = c.assocShare;
+
+      el = document.getElementById('btn-free-trial');
+      if (el) el.setAttribute('aria-pressed', c.freeTrial ? 'true' : 'false');
+
+      var locBtns = document.querySelectorAll('#seg-dev-loc .seg-btn');
+      locBtns.forEach(function(b) { b.classList.toggle('is-active', b.dataset.val === c.devLocation); });
+
+      el = document.getElementById('rng-churn'); if (el) el.value = c.churn;
+      el = document.getElementById('sel-market-scope'); if (el) el.value = c.marketScope;
+    }
+
+    function recalcAndRender(persist) {
+      var c = appState.config;
+      var m = computeYearMetrics(c, appState.savedYears);
+
+      renderControlLabels(c, m);
+      renderYearSlots(c, m);
+      renderLiveKpis(c, m);
+      renderAggregatePanel();
+      renderBenchmark(c, m);
+      renderGuvTable(c, m);
+      renderCharts(c, m);
+
+      if (persist) schedulePersist();
+    }
+
+    function renderControlLabels(c, m) {
+      var setTxt = function(id, txt) {
+        var node = document.getElementById(id);
+        if (node) node.textContent = txt;
+      };
+
+      setTxt('control-year-kicker', `Konfiguration für Jahr ${c.activeYear}`);
+      setTxt('active-market-chip', `Markt: ${m.marketLabel}`);
+      setTxt('save-btn-label', appState.savedYears[String(c.activeYear)] ? `Jahr ${c.activeYear} überschreiben` : `Jahr ${c.activeYear} speichern`);
+      setTxt('summary-yr', String(c.activeYear));
+      setTxt('summary-score-chip', `Score: ${m.featureScore.toFixed(1).replace('.', ',')} / 10`);
+      setTxt('sum-new-teams', `${fmtNum(m.newTeams)} Teams`);
+      setTxt('sum-active-teams', `${fmtNum(m.activeSubsEnd)} Teams`);
+      setTxt('sum-cogs-unit', `${m.cogsUnit.toFixed(0)} €`);
+
+      // Tab meta badges
+      setTxt('tab-meta-budget', fmtEur(c.totalBudget, true));
+      var tierLabel = c.tier === 'standard' ? 'Std' : (c.tier === 'ultra' ? 'Ultra' : 'Pro');
+      setTxt('tab-meta-prodprice', `${tierLabel} · ${c.hwPrice} €`);
+      setTxt('tab-meta-placepromo', `D2C ${c.d2cShare}%`);
+      var locShort = c.devLocation === 'europe' ? 'EU' : (c.devLocation === 'hybrid' ? 'Mix' : 'Asien');
+      setTxt('tab-meta-ops', `${locShort} · ${c.churn}% Churn`);
+
+      // Budget readouts & stacked bar
+      setTxt('lbl-total-budget', fmtEur(c.totalBudget));
+      setTxt('lbl-alloc-ads', `${c.alloc.ads} % · ${fmtEur(m.budgetAds)}`);
+      setTxt('lbl-alloc-spons', `${c.alloc.spons} % · ${fmtEur(m.budgetSpons)}`);
+      setTxt('lbl-alloc-rnd', `${c.alloc.rnd} % · ${fmtEur(m.budgetRnd)}`);
+      setTxt('lbl-alloc-dev', `${c.alloc.dev} % · ${fmtEur(m.budgetDevStaff)}`);
+      setTxt('lbl-alloc-sales', `${c.alloc.sales} % · ${fmtEur(m.budgetSalesStaff)}`);
+
+      var barAds = document.getElementById('bar-ads'); if (barAds) barAds.style.width = `${c.alloc.ads}%`;
+      var barSpons = document.getElementById('bar-spons'); if (barSpons) barSpons.style.width = `${c.alloc.spons}%`;
+      var barRnd = document.getElementById('bar-rnd'); if (barRnd) barRnd.style.width = `${c.alloc.rnd}%`;
+      var barDev = document.getElementById('bar-dev'); if (barDev) barDev.style.width = `${c.alloc.dev}%`;
+      var barSales = document.getElementById('bar-sales'); if (barSales) barSales.style.width = `${c.alloc.sales}%`;
+
+      var locText = c.devLocation === 'europe' ? 'Europa' : (c.devLocation === 'hybrid' ? 'Hybrid EU/Asien' : 'Asien');
+      setTxt('hint-dev-fte', `Finanziert ca. ${m.devFte.toFixed(1).replace('.', ',')} FTE am Standort ${locText}`);
+      setTxt('hint-sales-fte', `Finanziert ca. ${m.salesFte.toFixed(1).replace('.', ',')} Sales-FTE (${fmtEur(75000 * Math.pow(1.03, c.activeYear - 1))}/FTE)`);
+
+      var salesSlider = document.getElementById('rng-sales-fte');
+      if (salesSlider) salesSlider.value = Math.max(1, Math.min(12, Number(m.salesFte.toFixed(1))));
+      setTxt('lbl-sales-fte', `${m.salesFte.toFixed(1).replace('.', ',')} FTE`);
+
+      // Product & Price
+      setTxt('hint-tier-cogs', `Herstellkosten Jahr ${c.activeYear}: ${m.cogsUnit.toFixed(2).replace('.', ',')} € (−8 % Lernkurve p.a.)`);
+      var aiNames = { 1: 'Basis-Tracking', 2: 'Taktik-KI', 3: 'KI-Co-Trainer' };
+      setTxt('lbl-ai-depth', aiNames[c.aiDepth] || 'Taktik-KI');
+      setTxt('lbl-hw-price', `${c.hwPrice} €`);
+      setTxt('lbl-saas-price', `${c.saasPrice} € / Mon.`);
+      setTxt('lbl-haas-price', `${c.haasPrice} € / Mon.`);
+      setTxt('lbl-haas-share', `${c.haasShare} %`);
+      setTxt('lbl-discount', `${c.discount} %`);
+
+      // Place & Promo
+      setTxt('lbl-d2c-share', `${c.d2cShare} % D2C / ${100 - c.d2cShare} % Handel`);
+      setTxt('lbl-promo-ads-mix', `${c.adsMix} %`);
+      setTxt('lbl-promo-assoc', `${c.assocShare} % Sponsoring-Anteil`);
+
+      // Ops
+      setTxt('lbl-churn', `${c.churn} % p.a.`);
+      setTxt('lbl-tam', `${fmtNum(m.tamTeams)} Zielteams`);
+    }
+
+    function renderYearSlots(c, activeMetrics) {
+      var container = document.getElementById('year-slots-container');
+      if (!container) return;
+      var html = '';
+      for (var y = 1; y <= 5; y++) {
+        var key = String(y);
+        var saved = appState.savedYears[key];
+        var isActive = c.activeYear === y;
+        var cls = 'year-slot' + (isActive ? ' is-active' : '') + (saved ? ' is-saved' : '');
+        var badge = saved
+          ? `<span class="chip chip-sage">Gespeichert</span>`
+          : (isActive ? `<span class="chip chip-cyan">Aktiv</span>` : `<span class="data-label">Offen</span>`);
+        var meta = saved
+          ? `Umsatz <strong>${fmtEur(saved.metrics.netRevenue, true)}</strong> · EBIT <strong style="color: ${saved.metrics.ebit >= 0 ? 'var(--tertiary)' : 'var(--error)'}">${fmtEur(saved.metrics.ebit, true)}</strong>`
+          : (isActive ? `Live: <strong>${fmtEur(activeMetrics.netRevenue, true)}</strong>` : `Noch nicht konfiguriert`);
+
+        html += `
+          <button type="button" class="${cls}" onclick="selectYear(${y})">
+            <div class="year-slot-head">
+              <span class="year-slot-name">Jahr ${y}</span>
+              ${badge}
+            </div>
+            <div class="year-slot-meta">${meta}</div>
+          </button>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderLiveKpis(c, m) {
+      var setTxt = function(id, txt) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+      setTxt('kpi-rev-label', `Netto-Umsatz (Jahr ${c.activeYear})`);
+      setTxt('kpi-rev', fmtEur(m.netRevenue, true));
+      setTxt('kpi-rev-sub', `HW: ${fmtEur(m.netHwRev, true)} · SaaS: ${fmtEur(m.netSaasRev, true)}`);
+
+      setTxt('kpi-ebit', fmtEur(m.ebit, true));
+      var ebitSub = document.getElementById('kpi-ebit-sub');
+      if (ebitSub) {
+        ebitSub.textContent = `EBIT-Marge: ${fmtPct(m.ebitMargin)} · DB III: ${fmtEur(m.db3, true)}`;
+        ebitSub.className = 'kpi-sub ' + (m.ebit >= 0 ? 'is-positive' : 'is-negative');
+      }
+
+      setTxt('kpi-db2', fmtEur(m.db2, true));
+      setTxt('kpi-db2-sub', `DB-II-Marge: ${fmtPct(m.db2Margin)} (nach Cloud/Kanal)`);
+
+      var beText = m.breakEvenNewTeams === 0 ? 'Erreicht (Bestand)' : `${fmtNum(m.breakEvenNewTeams)} Teams`;
+      setTxt('kpi-be', beText);
+      var beSub = document.getElementById('kpi-be-sub');
+      if (beSub) {
+        var deltaBe = m.newTeams - m.breakEvenNewTeams;
+        beSub.textContent = `Neuabsatz: ${fmtNum(m.newTeams)} (${deltaBe >= 0 ? '+' : ''}${fmtNum(deltaBe)})`;
+        beSub.className = 'kpi-sub ' + (deltaBe >= 0 ? 'is-positive' : 'is-warning');
+      }
+
+      setTxt('kpi-clvcac', `${m.clvCacRatio.toFixed(1).replace('.', ',')}x`);
+      var clvSub = document.getElementById('kpi-clvcac-sub');
+      if (clvSub) {
+        clvSub.textContent = `Churn: ${c.churn}% · CLV: ${fmtEur(m.clv)} / CAC: ${fmtEur(m.cac)}`;
+        clvSub.className = 'kpi-sub ' + (m.clvCacRatio >= 3.0 ? 'is-positive' : (m.clvCacRatio >= 1.8 ? 'is-warning' : 'is-negative'));
+      }
+    }
+
+    function renderAggregatePanel() {
+      var savedList = [];
+      for (var y = 1; y <= 5; y++) {
+        if (appState.savedYears[String(y)]) {
+          savedList.push(appState.savedYears[String(y)].metrics);
+        }
+      }
+      var count = savedList.length;
+      var countEl = document.getElementById('agg-saved-count');
+      if (countEl) countEl.textContent = `${count} von 5 Jahren gespeichert`;
+
+      var statusChip = document.getElementById('agg-status-chip');
+      if (statusChip) {
+        if (count === 0) {
+          statusChip.textContent = 'Bereit zum Speichern';
+          statusChip.className = 'chip chip-cyan';
+        } else if (count < 5) {
+          statusChip.textContent = `${count}/5 Jahre erfasst`;
+          statusChip.className = 'chip chip-amber';
+        } else {
+          statusChip.textContent = '5-Jahres-Plan komplett';
+          statusChip.className = 'chip chip-sage';
+        }
+      }
+
+      if (count === 0) {
+        document.getElementById('agg-rev').textContent = '—';
+        document.getElementById('agg-ebit').textContent = '—';
+        document.getElementById('agg-roi').textContent = '—';
+        document.getElementById('agg-be-year').textContent = '—';
+        return;
+      }
+
+      var sumRev = 0, sumHw = 0, sumSaas = 0, sumEbit = 0;
+      var opBeYear = null;
+      var capBeYear = null;
+      var runningEbit = 0;
+
+      for (var i = 0; i < savedList.length; i++) {
+        var m = savedList[i];
+        sumRev += m.netRevenue;
+        sumHw += m.netHwRev;
+        sumSaas += m.netSaasRev;
+        sumEbit += m.ebit;
+        runningEbit += m.ebit;
+        if (opBeYear === null && m.ebit > 0) opBeYear = m.year;
+        if (capBeYear === null && runningEbit >= INITIAL_CAPEX) capBeYear = m.year;
+      }
+
+      var netRoi = ((sumEbit - INITIAL_CAPEX) / INITIAL_CAPEX) * 100;
+
+      document.getElementById('agg-rev').textContent = fmtEur(sumRev, true);
+      document.getElementById('agg-rev-sub').textContent = `HW: ${fmtEur(sumHw, true)} · SaaS: ${fmtEur(sumSaas, true)}`;
+
+      var ebitEl = document.getElementById('agg-ebit');
+      ebitEl.textContent = fmtEur(sumEbit, true);
+      ebitEl.style.color = sumEbit >= 0 ? 'var(--tertiary)' : 'var(--error)';
+      document.getElementById('agg-ebit-sub').textContent = `Nach Capex (1,66 Mio. €): ${fmtEur(sumEbit - INITIAL_CAPEX, true)}`;
+
+      var roiEl = document.getElementById('agg-roi');
+      roiEl.textContent = `${netRoi >= 0 ? '+' : ''}${netRoi.toFixed(0)} %`;
+      roiEl.style.color = netRoi >= 0 ? 'var(--tertiary)' : 'var(--warning)';
+
+      var beText = opBeYear ? `Jahr ${opBeYear}` : 'Nicht erreicht';
+      document.getElementById('agg-be-year').textContent = beText;
+      document.getElementById('agg-be-sub').textContent = capBeYear
+        ? `Capex-Amortisation: Jahr ${capBeYear}`
+        : `Capex-Amortisation: offen (${fmtEur(Math.max(0, INITIAL_CAPEX - sumEbit), true)} fehlen)`;
+    }
+
+    function renderBenchmark(c, m) {
+      var maxScale = 2800;
+      document.getElementById('tco-footage-buy').textContent = fmtEur(m.tcoBuyY1);
+      document.getElementById('tco-footage-haas').textContent = fmtEur(m.tcoHaasY1);
+
+      var barBuy = document.getElementById('bar-tco-buy');
+      if (barBuy) barBuy.style.width = `${Math.min(100, (m.tcoBuyY1 / maxScale) * 100)}%`;
+
+      var barHaas = document.getElementById('bar-tco-haas');
+      if (barHaas) barHaas.style.width = `${Math.min(100, (m.tcoHaasY1 / maxScale) * 100)}%`;
+
+      var advEur = VEO_BENCHMARK_TCO - m.blendedTcoY1;
+      var advPct = (advEur / VEO_BENCHMARK_TCO) * 100;
+      var chip = document.getElementById('veo-advantage-chip');
+      if (chip) {
+        if (advEur >= 0) {
+          chip.textContent = `Preisvorteil vs. Veo: −${fmtEur(advEur)} (−${advPct.toFixed(0)} %)`;
+          chip.className = 'chip chip-sage';
+        } else {
+          chip.textContent = `Preisaufschlag vs. Veo: +${fmtEur(Math.abs(advEur))} (+${Math.abs(advPct).toFixed(0)} %)`;
+          chip.className = 'chip chip-amber';
+        }
+      }
+
+      var tierTxt = c.tier === 'standard' ? 'Standard' : (c.tier === 'ultra' ? 'Ultra 4K' : 'Pro (LTE)');
+      var aiTxt = c.aiDepth === 1 ? 'Basis-Tracking' : (c.aiDepth === 2 ? 'Taktik-KI' : 'Co-Trainer KI');
+      var locTxt = c.devLocation === 'europe' ? 'EU-DSGVO' : (c.devLocation === 'hybrid' ? 'Hybrid-Dev' : 'Asien-Dev');
+      document.getElementById('bench-footage-spec').textContent = `${tierTxt} · ${aiTxt} · ${locTxt}`;
+      document.getElementById('bench-footage-score').textContent = m.featureScore.toFixed(1).replace('.', ',');
+    }
+
+    function renderGuvTable(c, activeM) {
+      var tbl = document.getElementById('guv-table');
+      if (!tbl) return;
+
+      var cols = [];
+      for (var y = 1; y <= 5; y++) {
+        var k = String(y);
+        if (appState.savedYears[k]) {
+          cols.push({ m: appState.savedYears[k].metrics, status: 'saved', active: c.activeYear === y });
+        } else if (c.activeYear === y) {
+          cols.push({ m: activeM, status: 'live', active: true });
+        } else {
+          cols.push({ m: null, status: 'empty', active: false });
+        }
+      }
+
+      var headHtml = `<thead><tr><th>Position (Differenzierte DB-Rechnung)</th>`;
+      for (var h = 0; h < 5; h++) {
+        var yr = h + 1;
+        var tag = cols[h].status === 'saved' ? '' : (cols[h].status === 'live' ? ' (Live)' : '');
+        var thCls = cols[h].active ? ' class="col-active"' : '';
+        headHtml += `<th${thCls}>Jahr ${yr}${tag}</th>`;
+      }
+      headHtml += `<th>5J-Summe</th></tr></thead>`;
+
+      var rowsDef = [
+        { label: 'Aktive Teams (Jahresende)', key: 'activeSubsEnd', type: 'count' },
+        { label: 'Netto-Hardware-Umsatz', key: 'netHwRev', type: 'eur' },
+        { label: 'Netto-SaaS &amp; HaaS-Umsatz', key: 'netSaasRev', type: 'eur' },
+        { label: 'Netto-Umsatz (Gesamt)', key: 'netRevenue', type: 'eur', cls: 'row-subtotal' },
+        { label: './. Variable Herstell-, Versand- &amp; Testkosten', key: 'varCogsLogistics', type: 'neg' },
+        { label: '= Deckungsbeitrag I (DB I)', key: 'db1', type: 'eur', cls: 'row-subtotal' },
+        { label: './. Cloud, KI-Inferenz, Händlermarge &amp; Payment', key: 'varChannelCloudCosts', type: 'neg' },
+        { label: '= Deckungsbeitrag II (DB II)', key: 'db2', type: 'eur', cls: 'row-subtotal' },
+        { label: './. Promotion Ads (Top-Down)', key: 'budgetAds', type: 'neg' },
+        { label: './. Sponsoring, Verbände &amp; Messen (Top-Down)', key: 'budgetSpons', type: 'neg' },
+        { label: './. F&amp;E &amp; KI-Modelltraining (Top-Down)', key: 'budgetRnd', type: 'neg' },
+        { label: './. Personal F&amp;E-Team (Top-Down)', key: 'budgetDevStaff', type: 'neg' },
+        { label: './. Personal Sales-Team (Top-Down)', key: 'budgetSalesStaff', type: 'neg' },
+        { label: '= Deckungsbeitrag III (DB III)', key: 'db3', type: 'eur', cls: 'row-subtotal' },
+        { label: './. Fixer Basis-Overhead &amp; Garantie', key: 'fixedOverheadTotal', type: 'neg' },
+        { label: '= EBIT (Operatives Jahresergebnis)', key: 'ebit', type: 'ebit', cls: 'row-ebit' }
+      ];
+
+      var bodyHtml = '<tbody>';
+      for (var r = 0; r < rowsDef.length; r++) {
+        var rd = rowsDef[r];
+        var trCls = rd.cls ? ` class="${rd.cls}"` : '';
+        bodyHtml += `<tr${trCls}><td>${rd.label}</td>`;
+        var sum = 0;
+        var hasAny = false;
+        for (var colIdx = 0; colIdx < 5; colIdx++) {
+          var item = cols[colIdx];
+          var tdCls = item.active ? 'col-active' : '';
+          if (!item.m) {
+            bodyHtml += `<td class="${tdCls}" style="color: var(--secondary);">—</td>`;
+            continue;
+          }
+          hasAny = true;
+          var raw = item.m[rd.key];
+          if (rd.type !== 'count') sum += raw;
+          var disp = '—';
+          var colorCls = '';
+          if (rd.type === 'count') {
+            disp = fmtNum(raw);
+          } else if (rd.type === 'neg') {
+            disp = '−' + fmtEur(raw);
+          } else if (rd.type === 'ebit') {
+            disp = fmtEur(raw);
+            colorCls = raw >= 0 ? 'val-pos' : 'val-neg';
+          } else {
+            disp = fmtEur(raw);
+            if (rd.key === 'db3' || rd.key === 'db2' || rd.key === 'db1') {
+              colorCls = raw >= 0 ? '' : 'val-neg';
+            }
+          }
+          bodyHtml += `<td class="${tdCls} ${colorCls}">${disp}</td>`;
+        }
+        // Summary column
+        var sumDisp = '—';
+        var sumCls = '';
+        if (hasAny) {
+          if (rd.type === 'count') sumDisp = '—';
+          else if (rd.type === 'neg') sumDisp = '−' + fmtEur(sum);
+          else if (rd.type === 'ebit') {
+            sumDisp = fmtEur(sum);
+            sumCls = sum >= 0 ? 'val-pos' : 'val-neg';
+          } else sumDisp = fmtEur(sum);
+        }
+        bodyHtml += `<td class="${sumCls}">${sumDisp}</td></tr>`;
+      }
+      bodyHtml += '</tbody>';
+      tbl.innerHTML = headHtml + bodyHtml;
+    }
+
+    /* =====================================================================
+       6. CHART.JS MULTI-YEAR VISUALIZATIONS
+       ===================================================================== */
+    function renderCharts(c, activeM) {
+      if (typeof Chart === 'undefined') return;
+
+      var labels = ['Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4', 'Jahr 5'];
+      var hwSeries = [];
+      var saasSeries = [];
+      var db2Series = [];
+      var ebitSeries = [];
+      var activeSubsSeries = [];
+      var newTeamsSeries = [];
+      var churnSeries = [];
+
+      var savedCount = 0;
+      for (var y = 1; y <= 5; y++) {
+        var k = String(y);
+        var entry = appState.savedYears[k];
+        if (entry) savedCount++;
+        var m = entry ? entry.metrics : (c.activeYear === y ? activeM : null);
+        if (m) {
+          hwSeries.push(Math.round(m.netHwRev / 1000));
+          saasSeries.push(Math.round(m.netSaasRev / 1000));
+          db2Series.push(Math.round(m.db2 / 1000));
+          ebitSeries.push(Math.round(m.ebit / 1000));
+          activeSubsSeries.push(m.activeSubsEnd);
+          newTeamsSeries.push(m.newTeams);
+          churnSeries.push(m.churnedTeams);
+        } else {
+          hwSeries.push(null);
+          saasSeries.push(null);
+          db2Series.push(null);
+          ebitSeries.push(null);
+          activeSubsSeries.push(null);
+          newTeamsSeries.push(null);
+          churnSeries.push(null);
+        }
+      }
+
+      var hintFin = document.getElementById('empty-hint-fin');
+      var hintSub = document.getElementById('empty-hint-sub');
+      var showEmpty = savedCount === 0;
+      if (hintFin) hintFin.style.display = showEmpty ? 'flex' : 'none';
+      if (hintSub) hintSub.style.display = showEmpty ? 'flex' : 'none';
+
+      var c1 = getCssToken('--data-1');
+      var c2 = getCssToken('--data-2');
+      var c3 = getCssToken('--data-3');
+      var c4 = getCssToken('--data-4');
+      var tickColor = getCssToken('--grid-tick');
+      var gridColor = getCssToken('--outline-variant');
+      var fontMono = getCssToken('--font-label');
+      var surfaceHigh = getCssToken('--surface-container-high');
+      var textMain = getCssToken('--on-surface');
+      var areaCyan = getCssToken('--area-cyan');
+
+      var commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: tickColor,
+              font: { family: fontMono, size: 11 },
+              boxWidth: 12,
+              padding: 12
+            }
+          },
+          tooltip: {
+            backgroundColor: surfaceHigh,
+            titleColor: textMain,
+            bodyColor: textMain,
+            borderColor: gridColor,
+            borderWidth: 1,
+            titleFont: { family: fontMono, size: 12 },
+            bodyFont: { family: fontMono, size: 12 }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: tickColor, font: { family: fontMono, size: 11 } },
+            grid: { display: false }
+          },
+          y: {
+            ticks: { color: tickColor, font: { family: fontMono, size: 11 } },
+            grid: { color: gridColor }
+          }
+        }
+      };
+
+      var finCanvas = document.getElementById('chart-financials');
+      if (finCanvas) {
+        if (chartFin) chartFin.destroy();
+        chartFin = new Chart(finCanvas.getContext('2d'), {
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                type: 'bar',
+                label: 'HW-Umsatz (T€)',
+                data: hwSeries,
+                backgroundColor: c3,
+                borderRadius: 3,
+                stack: 'rev'
+              },
+              {
+                type: 'bar',
+                label: 'SaaS-Umsatz (T€)',
+                data: saasSeries,
+                backgroundColor: c1,
+                borderRadius: 3,
+                stack: 'rev'
+              },
+              {
+                type: 'line',
+                label: 'DB II (T€)',
+                data: db2Series,
+                borderColor: c4,
+                backgroundColor: c4,
+                borderWidth: 2,
+                borderDash: [4, 4],
+                tension: 0.25,
+                pointRadius: 3
+              },
+              {
+                type: 'line',
+                label: 'EBIT (T€)',
+                data: ebitSeries,
+                borderColor: c2,
+                backgroundColor: c2,
+                borderWidth: 2.5,
+                tension: 0.25,
+                pointRadius: 4
+              }
+            ]
+          },
+          options: commonOptions
+        });
+      }
+
+      var subCanvas = document.getElementById('chart-subscribers');
+      if (subCanvas) {
+        if (chartSub) chartSub.destroy();
+        chartSub = new Chart(subCanvas.getContext('2d'), {
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                type: 'line',
+                label: 'Aktive Teams gesamt',
+                data: activeSubsSeries,
+                borderColor: c1,
+                backgroundColor: areaCyan,
+                fill: true,
+                borderWidth: 2.5,
+                tension: 0.28,
+                pointRadius: 4
+              },
+              {
+                type: 'bar',
+                label: 'Neukunden / Jahr',
+                data: newTeamsSeries,
+                backgroundColor: c2,
+                borderRadius: 3
+              },
+              {
+                type: 'bar',
+                label: 'Churn-Abgänge',
+                data: churnSeries,
+                backgroundColor: c4,
+                borderRadius: 3
+              }
+            ]
+          },
+          options: commonOptions
+        });
+      }
+    }
+
+    /* =====================================================================
+       7. STATE PERSISTENCE VIA GEMINI NOTEBOOK SHIM API
+       ===================================================================== */
+    function schedulePersist() {
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(function() {
+        persistNow();
+      }, 250);
+    }
+
+    async function persistNow() {
+      if (!window.notebookAppApi || typeof window.notebookAppApi.setAppState !== 'function') return;
+      try {
+        await window.notebookAppApi.setAppState({
+          config: appState.config,
+          savedYears: appState.savedYears
+        });
+      } catch (err) {
+        // Silent fallback in restricted environments
+      }
+    }
+
+    async function initApp() {
+      if (window.lucide) lucide.createIcons();
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+        try {
+          var restored = await window.notebookAppApi.getAppState();
+          if (restored && restored.config) {
+            appState.config = Object.assign(cloneObj(DEFAULT_CONFIG), restored.config);
+            if (restored.config.alloc) {
+              appState.config.alloc = Object.assign(cloneObj(DEFAULT_CONFIG.alloc), restored.config.alloc);
+            }
+          }
+          if (restored && restored.savedYears) {
+            appState.savedYears = restored.savedYears;
+          }
+        } catch (err) {
+          // Proceed with reference defaults
+        }
+      }
+
+      syncControlsFromConfig();
+      recalcAndRender(false);
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === 'function') {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
